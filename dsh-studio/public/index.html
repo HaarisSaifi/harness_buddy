@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harness Buddy — Autonomous Agent Studio & Chat</title>
+  <meta name="description" content="Master Multi-Agent Coding Studio powered by DeepSeek V4, Qwen 3.8 Max, Codestral, MiniMax M3 Vision & ShadowVault.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Left Sidebar: Agent Fleet & Workspace -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-logo">🚀</span>
+          <div class="brand-info">
+            <h2>Harness Buddy</h2>
+            <span class="subtext">Super OS Multi-Agent Engine</span>
+          </div>
+        </div>
+        <div class="health-pill">
+          <span class="live-dot"></span>
+          <span id="fleet-status-text">7/7 Agents Online</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section-title">
+        <span>SWARM AGENT FLEET</span>
+      </div>
+
+      <div class="agents-list" id="agents-list">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="http://localhost:4567" target="_blank" class="vault-shortcut-card">
+          <div class="vault-icon">🛡️</div>
+          <div class="vault-info">
+            <strong>ShadowVault AI</strong>
+            <span>Workspace Time-Machine & Rescue</span>
+          </div>
+          <span class="vault-arrow">↗</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Chat Studio Area -->
+    <main class="chat-studio">
+      <!-- Top Chat Bar -->
+      <header class="studio-header">
+        <div class="active-agent-banner">
+          <div class="agent-avatar" id="active-agent-avatar">🕸️</div>
+          <div class="agent-meta">
+            <div class="agent-title-row">
+              <h2 id="active-agent-name">Chief Master Orchestrator</h2>
+              <span class="agent-badge" id="active-agent-badge">1M Brain</span>
+            </div>
+            <p id="active-agent-role">Task Planner, Topology Architect & Swarm Coordinator</p>
+          </div>
+        </div>
+
+        <div class="header-controls">
+          <div class="model-tag" id="active-agent-model">qwen/qwen3.8-max:free</div>
+          <button id="btn-clear-chat" class="btn-icon" title="Clear Chat History">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Stream -->
+      <section class="messages-container" id="messages-container">
+        <!-- Welcome Hero with Quick Action Chips -->
+        <div class="welcome-hero" id="welcome-hero">
+          <div class="hero-icon">✨</div>
+          <h1>Aapka Autonomous Coding Studio Ready Hai!</h1>
+          <p>Kisi bhi agent ko select karein aur plain Hindi, Hinglish, ya English me task assign karein. Complex fullstack architecture se lekar automated debugging tak sab execute karega.</p>
+
+          <div class="prompt-chips-grid">
+            <button class="prompt-chip" data-prompt="Mujhe ek high-converting dark-mode SaaS dashboard banakar do HTML, CSS aur JavaScript me with glassmorphism and real-time charts.">
+              <span class="chip-emoji">🎨</span>
+              <div class="chip-text">
+                <strong>Modern Web App Build</strong>
+                <span>Dark-mode SaaS dashboard with animations</span>
+              </div>
+            </button>
+
+            <button class="prompt-chip" data-prompt="DeepSeek V4 ki tarah ek scalable microservice architecture plan karo with authentication, rate limiting and PostgreSQL.">
+              <span class="chip-emoji">⚡</span>
+              <div class="chip-text">
+                <strong>System Architecture</strong>
+                <span>Scalable microservices & database plan</span>
+              </div>
+            </button>
+
+            <button class="prompt-chip" data-prompt="Mere project ke files ko analyze karo aur performance optimization ke 5 best solutions suggest karo.">
+              <span class="chip-emoji">🔍</span>
+              <div class="chip-text">
+                <strong>Codebase Inspection</strong>
+                <span>Find bottlenecks & optimize logic</span>
+              </div>
+            </button>
+
+            <button class="prompt-chip" data-prompt="5 high-leverage micro-SaaS ya AdSense web tools ke ideas brainstorm karo jo me 24 ghante me bana saku.">
+              <span class="chip-emoji">💡</span>
+              <div class="chip-text">
+                <strong>Brainstorm High-ROI Ideas</strong>
+                <span>Quick-to-build profitable digital tools</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Chat Input Bar -->
+      <footer class="input-tray">
+        <form id="chat-form" class="chat-form">
+          <div class="input-wrapper">
+            <textarea
+              id="user-input"
+              rows="1"
+              placeholder="Apna task ya sawal likhein (Hindi / Hinglish / English)… Press Enter to send"
+              autocomplete="off"
+              spellcheck="false"
+            ></textarea>
+            <button type="submit" id="btn-send" class="btn-send" aria-label="Send message">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <div class="input-hint">
+            <span>Tip: <strong>Shift + Enter</strong> for new line • Live connected to <strong>Harness Buddy Fleet</strong></span>
+          </div>
+        </form>
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
