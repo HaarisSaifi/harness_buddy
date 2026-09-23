@@ -241,7 +241,7 @@ app.get('/api/preview-blob', (req, res) => {
   res.send(buf);
 });
 
-const PORT = process.env.PORT || 4567;
+const PORT = process.env.SHADOW_VAULT_PORT || 4567;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`\n===============================================================`);
   console.log(`🚀 SHADOW-VAULT AI (AUTONOMOUS TIME-MACHINE & RESCUE ENGINE)`);
