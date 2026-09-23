@@ -1,0 +1,45 @@
+# ==============================================================================
+# 🚀 HARNESS BUDDY: GITIGNORE
+# ==============================================================================
+
+# Environment files & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.local
+
+# Personal Memory & Notes
+brainmem.md
+
+# Dependencies & Package Managers
+node_modules/
+**/node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Framework outputs
+.next/
+.vercel/
+out/
+build/
+dist/
+
+# ShadowVault Runtime Store (Personal snapshot database)
+shadow-vault/vault-store/
+*.log
+
+# Scratch, Temporary & IDE files
+scratch/
+.system_generated/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store

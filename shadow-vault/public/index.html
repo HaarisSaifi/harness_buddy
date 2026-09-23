@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0e1a">
+  <title>ShadowVault — Workspace Time Machine & Recovery Studio</title>
+  <meta name="description" content="Autonomous file recovery, workspace time-machine and forensic restoration engine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+  </div>
+
+  <div class="app">
+    <!-- ======= Top Bar ======= -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.9L12 22l-5.2-2.8 1-5.9-4.3-4.1 5.9-.9L12 3z"/></svg>
+        </span>
+        <div class="brand-text">
+          <h1>ShadowVault</h1>
+          <span class="brand-sub">Workspace Time Machine</span>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="status-pill" id="status-pill">
+          <span class="pulse-dot"></span>
+          <span id="watcher-status-text">Connecting…</span>
+          <span class="status-secondary" id="connectivity-text"></span>
+        </div>
+        <button id="btn-quick-rescue" class="btn btn-rescue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          <span>Smart Rescue</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ======= Intro Banner ======= -->
+    <section class="intro">
+      <div class="intro-copy">
+        <h2>Apni files ko waapas laayein, <span class="grad">exact original path</span> par.</h2>
+        <p>ShadowVault har workspace ka live snapshot rakhta hai. Agar koi file delete ho, change ho ya corrupt ho jaye — use 1-click me restore karein.</p>
+      </div>
+      <div class="intro-steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div class="step-body"><strong>Folder select karein</strong><span>Apna project folder chunein</span></div>
+        </div>
+        <div class="step-arrow" aria-hidden="true"></div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div class="step-body"><strong>Delete dhoondein</strong><span>Khoi hui files turant dikhein</span></div>
+        </div>
+        <div class="step-arrow" aria-hidden="true"></div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div class="step-body"><strong>Restore dabayein</strong><span>100% same path par wapas</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= Toolbar ======= -->
+    <section class="toolbar">
+      <div class="scope">
+        <div class="scope-label">Currently viewing</div>
+        <div class="scope-value" id="active-folder-label">All protected workspaces</div>
+      </div>
+      <div class="toolbar-actions">
+        <button id="btn-browse-folder" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+          <span>Add folder</span>
+        </button>
+        <button id="btn-deep-scan" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <span>Deep scan</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======= Quick folder chips ======= -->
+    <section class="chips" id="quick-folder-chips" aria-label="Workspace shortcuts">
+      <!-- injected dynamically -->
+    </section>
+
+    <!-- ======= Search + Tabs ======= -->
+    <section class="search-row">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="search-input" placeholder="Search by file name, .js, .bat, config, image…" autocomplete="off" spellcheck="false">
+        <button id="btn-clear-search" class="clear-search" aria-label="Clear search" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" id="tab-deleted" data-view="deleted">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+          Deleted files
+          <span class="badge" id="badge-deleted-count">0</span>
+        </button>
+        <button class="tab" id="tab-timeline" data-view="timeline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          History
+          <span class="badge" id="badge-timeline-count">0</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======= Main Grid ======= -->
+    <main class="layout">
+      <!-- Left: Workspaces -->
+      <aside class="panel">
+        <div class="panel-head">
+          <h3>Protected workspaces</h3>
+          <button id="btn-browse-folder-side" class="btn btn-mini">+ Add</button>
+        </div>
+        <div class="workspace-list" id="workspace-list">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+        </div>
+        <div class="note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8M12 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>
+          <div>
+            <strong>Restore kaha hoga?</strong>
+            <p>Files <em>exact unke original path</em> par hip restore hogi jahan wo delete hone se pehle thi. Baad me "Open in Explorer" se folder khol sakte hain.</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center: Feed -->
+      <section class="panel feed-panel">
+        <div class="panel-head">
+          <h3 id="feed-title">Deleted files</h3>
+          <span class="feed-count" id="event-counter">0 files</span>
+        </div>
+        <div class="feed-container" id="feed-container">
+          <!-- dynamic cards -->
+        </div>
+      </section>
+
+      <!-- Right: AI Copilot -->
+      <aside class="panel copilot">
+        <div class="panel-head">
+          <h3>Recovery Copilot</h3>
+          <span class="model-chip">DeepSeek V4 Pro</span>
+        </div>
+        <div class="copilot-summary">
+          <button id="btn-ai-suggest" class="btn btn-ghost btn-block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>
+            <span>Suggest recovery</span>
+          </button>
+        </div>
+        <div class="ai-chat-box" id="ai-chat-box">
+          <div class="chat-msg ai">
+            <div class="chat-author">ShadowVault Copilot</div>
+            Aapka system live monitor ho raha hai. Koi bhi file recover karni ho to yahan likh sakte hain, ya aap "Suggest recovery" dabakar khud AI ki advice le sakte hain.
+          </div>
+        </div>
+        <form id="ai-chat-form" class="ai-input-group">
+          <input type="text" id="ai-prompt-input" class="ai-input" placeholder="Hindi ya English me likhein…" autocomplete="off" spellcheck="false">
+          <button type="submit" class="btn btn-primary btn-send" aria-label="Send">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+      </aside>
+    </main>
+
+    <footer class="foot">
+      <span id="foot-health">ShadowVault v2.0 · initializing…</span>
+    </footer>
+  </div>
+
+  <!-- ======= Toast ======= -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <span class="toast-icon" id="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </span>
+    <div class="toast-body">
+      <strong id="toast-title">File restored</strong>
+      <span id="toast-path"></span>
+    </div>
+    <div class="toast-actions">
+      <button id="btn-toast-open-explorer" class="btn btn-mini">Open in Explorer</button>
+      <button id="btn-toast-close" class="btn btn-mini icon-btn" aria-label="Dismiss">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======= Confirm Dialog ======= -->
+  <div id="dialog" class="overlay" role="dialog" aria-modal="true" hidden>
+    <div class="dialog">
+      <div class="dialog-icon" id="dialog-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      </div>
+      <h3 id="dialog-title">Are you sure?</h3>
+      <p id="dialog-message"></p>
+      <div class="dialog-actions">
+        <button id="dialog-cancel" class="btn btn-ghost">Cancel</button>
+        <button id="dialog-confirm" class="btn btn-rescue">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= Result Modal ======= -->
+  <div id="result-modal" class="overlay" role="dialog" aria-modal="true" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="result-title">Result</h3>
+        <button id="btn-result-close" class="btn btn-mini icon-btn" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="result-body"></div>
+    </div>
+  </div>
+
+  <!-- ======= Preview Modal ======= -->
+  <div id="preview-modal" class="overlay" role="dialog" aria-modal="true" hidden>
+    <div class="modal preview">
+      <div class="modal-head">
+        <div class="modal-title-wrap">
+          <h3 id="modal-filename">File preview</h3>
+          <span id="modal-filepath"></span>
+        </div>
+        <div class="modal-head-actions">
+          <button id="btn-modal-restore" class="btn btn-rescue btn-mini">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+            Restore
+          </button>
+          <button id="btn-close-modal" class="btn btn-mini icon-btn" aria-label="Close preview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" id="modal-body"><div class="spinner"></div></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

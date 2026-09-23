@@ -1,0 +1,6 @@
+[submodule "agency-agents"]
+	path = agency-agents
+	url = https://github.com/msitarzewski/agency-agents.git
+[submodule "dsh-engine"]
+	path = dsh-engine
+	url = https://github.com/deepseek-ai/deepseek-harness.git

@@ -1,0 +1,91 @@
+{
+  "name": "Super-OS-Engine",
+  "version": "1.0.0",
+  "description": "Unified Multi-Agent OS & Coding Automation Engine",
+  "default_orchestrator": "qwen3.8-max",
+  "providers": {
+    "xkiro": {
+      "name": "xKiro AI Platform",
+      "baseURL": "https://api.xkiro.com/v1",
+      "apiKey": "${XKIRO_API_KEY}",
+      "models": {
+        "orchestrator": {
+          "id": "qwen/qwen3.8-max:free",
+          "name": "Qwen 3.8 Max (Flagship 1M Context)",
+          "context_window": "1M tokens",
+          "role": "Chief Multi-Agent Orchestrator & Master Task Planner",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        },
+        "devops_coder": {
+          "id": "mistralai/devstral-medium",
+          "name": "Mistral Devstral Medium",
+          "context_window": "256K tokens",
+          "role": "PowerShell, Terminal Commands & Git Version Control",
+          "agent_persona": "agents/02-devops-os-automator.md"
+        },
+        "fullstack_engineer": {
+          "id": "mistralai/codestral-2508",
+          "name": "Mistral Codestral 2508",
+          "context_window": "256K tokens",
+          "role": "Full-Stack Software Engineering, Core Logic & Refactoring",
+          "agent_persona": "agents/04-fullstack-engineer.md"
+        },
+        "frontend_designer": {
+          "id": "qwen/qwen3.7-max:free",
+          "name": "Qwen 3.7 Max Designer",
+          "context_window": "1M tokens",
+          "role": "UI/UX Design, CSS, Modern Web Frontends",
+          "agent_persona": "agents/03-frontend-ui-builder.md"
+        },
+        "codebase_onboarder": {
+          "id": "minimax/minimax-m3:free",
+          "name": "MiniMax M3 (1M Multimodal Vision & Agentic)",
+          "context_window": "1M tokens",
+          "role": "Large Codebase Onboarding, Vision Image-to-Code & Multimodal Tasks",
+          "agent_persona": "agents/05-codebase-onboarder.md"
+        },
+        "dedicated_coder": {
+          "id": "qwen/qwen3-coder-plus:free",
+          "name": "Qwen 3 Coder Plus",
+          "context_window": "1M tokens",
+          "role": "Deep Algorithmic Coding, Complex Bug Fixing & Unit Testing",
+          "agent_persona": "agents/04-fullstack-engineer.md"
+        }
+      }
+    },
+    "dahl": {
+      "name": "Dahl Global Inference (100M Free Tokens)",
+      "baseURL": "https://inference.dahl.global/v1",
+      "apiKey": "${DAHL_API_KEY}",
+      "models": {
+        "deepseek_v4_flash": {
+          "id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+          "name": "DeepSeek V4 Flash (Official)",
+          "context_window": "128K tokens",
+          "role": "Ultra-Fast DeepSeek MoE Reasoning & Code Indexing",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        },
+        "minimax_m27": {
+          "id": "MiniMaxAI/MiniMax-M2.7",
+          "name": "MiniMax M2.7",
+          "context_window": "1M tokens",
+          "role": "Secondary Multimodal Reasoning"
+        }
+      }
+    },
+    "opencode_oxalpha": {
+      "name": "OpenCode AI (Ox Alpha)",
+      "runtime": "opencode-ai",
+      "model": "stealth/ox-alpha",
+      "context_window": "1M tokens",
+      "cost": "$0 Free Tier",
+      "usage": "Run 'start-opencode.bat' in any workspace"
+    }
+  },
+  "workspaces": {
+    "primary": "d:\\deepseek-harness",
+    "web_projects": "d:\\Iwt",
+    "agency_projects": "d:\\agency",
+    "adsense_projects": "d:\\adsense"
+  }
+}
