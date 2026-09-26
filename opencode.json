@@ -52,6 +52,57 @@
           "id": "MiniMaxAI/MiniMax-M2.7"
         }
       }
+    },
+    "nvidia": {
+      "npm": "@ai-sdk/openai",
+      "name": "NVIDIA NIM (Free Endpoints)",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "{env:NVIDIA_API_KEY}"
+      },
+      "models": {
+        "glm-5.3": {
+          "name": "Z.ai GLM 5.3 (753B Heavy Logic)",
+          "id": "z-ai/glm-5.3"
+        },
+        "glm-5.3-flash": {
+          "name": "Z.ai GLM 5.3 Flash (320B Multimodal)",
+          "id": "z-ai/glm-5.3-flash"
+        },
+        "kimi-k3": {
+          "name": "Moonshot Kimi K3 (2.8T Agentic Brain)",
+          "id": "moonshotai/kimi-k3"
+        },
+        "deepseek-v4.1": {
+          "name": "DeepSeek V4.1 Flash",
+          "id": "deepseek-ai/deepseek-v4.1-flash"
+        }
+      }
+    },
+    "agentrouter": {
+      "npm": "@ai-sdk/openai",
+      "name": "Agent Router (Elite Tier)",
+      "options": {
+        "baseURL": "https://agentrouter.org/v1",
+        "apiKey": "{env:AGENTROUTER_API_KEY}",
+        "headers": {
+          "User-Agent": "RooCode/0.15.0"
+        }
+      },
+      "models": {
+        "claude-opus-5": {
+          "name": "Claude Opus 5 (Frontier Architecture & Logic)",
+          "id": "claude-opus-5"
+        },
+        "gpt-6-astra": {
+          "name": "GPT-6 Astra (Next-Gen Reasoning)",
+          "id": "gpt-6-astra"
+        },
+        "deepseek-v4": {
+          "name": "DeepSeek V4 Flash",
+          "id": "deepseek-v4-flash"
+        }
+      }
     }
   }
 }

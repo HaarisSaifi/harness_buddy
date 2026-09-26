@@ -1,149 +1,227 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harness Buddy — Autonomous Agent Studio & Chat</title>
-  <meta name="description" content="Master Multi-Agent Coding Studio powered by DeepSeek V4, Qwen 3.8 Max, Codestral, MiniMax M3 Vision & ShadowVault.">
+  <title>DeepSeek Harness — Autonomous Agent Studio</title>
+  <meta name="description" content="Professional Multi-Agent Engineering Studio powered by DeepSeek V4, Moonshot Kimi K3, Z.ai GLM 5.3, Mistral Codestral, and Qwen.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Ambient background glow -->
-  <div class="ambient-glow" aria-hidden="true">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
-  </div>
-
-  <div class="app-container">
-    <!-- Left Sidebar: Agent Fleet & Workspace -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
+  <div class="app-layout">
+    <!-- Sidebar: Navigation & Agent Fleet -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
         <div class="brand">
-          <span class="brand-logo">🚀</span>
-          <div class="brand-info">
-            <h2>Harness Buddy</h2>
-            <span class="subtext">Super OS Multi-Agent Engine</span>
+          <div class="brand-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">Harness Studio</span>
+            <span class="brand-tag">ENGINEERING SWARM</span>
           </div>
         </div>
-        <div class="health-pill">
-          <span class="live-dot"></span>
-          <span id="fleet-status-text">7/7 Agents Online</span>
+        <button id="btn-sidebar-collapse" class="icon-btn" title="Collapse Sidebar" aria-label="Collapse Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="fleet-status-card">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-label" id="fleet-status-text">Fleet Synchronized</span>
         </div>
+        <span class="status-meta" id="fleet-count-text">9 Models</span>
       </div>
 
       <div class="sidebar-section-title">
-        <span>SWARM AGENT FLEET</span>
+        <span>AGENTS & BRAINS</span>
       </div>
 
-      <div class="agents-list" id="agents-list">
-        <!-- Rendered dynamically -->
-      </div>
+      <!-- Agent List (Rendered dynamically) -->
+      <nav class="agent-nav" id="agents-list" aria-label="Agent Fleet Navigation">
+        <!-- Rendered dynamically via app.js -->
+      </nav>
 
-      <div class="sidebar-footer">
-        <a href="http://localhost:4567" target="_blank" class="vault-shortcut-card">
-          <div class="vault-icon">🛡️</div>
-          <div class="vault-info">
-            <strong>ShadowVault AI</strong>
-            <span>Workspace Time-Machine & Rescue</span>
+      <!-- Sidebar Footer -->
+      <div class="sidebar-bottom">
+        <a href="http://localhost:4567" target="_blank" rel="noopener noreferrer" class="tool-link">
+          <div class="tool-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
           </div>
-          <span class="vault-arrow">↗</span>
+          <div class="tool-details">
+            <span class="tool-name">ShadowVault</span>
+            <span class="tool-meta">Workspace Time-Machine</span>
+          </div>
+          <svg class="tool-external" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="7" y1="17" x2="17" y2="7"/>
+            <polyline points="7 7 17 7 17 17"/>
+          </svg>
         </a>
       </div>
     </aside>
 
-    <!-- Main Chat Studio Area -->
-    <main class="chat-studio">
-      <!-- Top Chat Bar -->
-      <header class="studio-header">
-        <div class="active-agent-banner">
-          <div class="agent-avatar" id="active-agent-avatar">🕸️</div>
-          <div class="agent-meta">
-            <div class="agent-title-row">
-              <h2 id="active-agent-name">Chief Master Orchestrator</h2>
-              <span class="agent-badge" id="active-agent-badge">1M Brain</span>
+    <!-- Main Chat Workspace -->
+    <main class="chat-workspace">
+      <!-- Top Bar / Header -->
+      <header class="top-nav">
+        <div class="nav-left">
+          <button id="btn-sidebar-toggle" class="icon-btn mobile-only" title="Open Sidebar" aria-label="Open Sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+
+          <div class="active-agent-info">
+            <div class="agent-badge-icon" id="header-agent-icon">
+              <!-- SVG Icon -->
             </div>
-            <p id="active-agent-role">Task Planner, Topology Architect & Swarm Coordinator</p>
+            <div class="agent-headings">
+              <div class="agent-name-row">
+                <h1 id="active-agent-name" class="agent-display-name">Chief Orchestrator</h1>
+                <span class="pill-badge" id="active-agent-badge">1M Context</span>
+              </div>
+              <p id="active-agent-role" class="agent-display-role">Task Decomposition & Agent Swarm Router</p>
+            </div>
           </div>
         </div>
 
-        <div class="header-controls">
-          <div class="model-tag" id="active-agent-model">qwen/qwen3.8-max:free</div>
-          <button id="btn-clear-chat" class="btn-icon" title="Clear Chat History">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+        <div class="nav-right">
+          <div class="model-spec" id="active-agent-model-container">
+            <span class="spec-label">Model:</span>
+            <code id="active-agent-model" class="spec-value">qwen/qwen3.8-max:free</code>
+          </div>
+
+          <button id="btn-clear-chat" class="icon-btn" title="Clear Conversation" aria-label="Clear Conversation">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
           </button>
         </div>
       </header>
 
-      <!-- Messages Stream -->
-      <section class="messages-container" id="messages-container">
-        <!-- Welcome Hero with Quick Action Chips -->
-        <div class="welcome-hero" id="welcome-hero">
-          <div class="hero-icon">✨</div>
-          <h1>Aapka Autonomous Coding Studio Ready Hai!</h1>
-          <p>Kisi bhi agent ko select karein aur plain Hindi, Hinglish, ya English me task assign karein. Complex fullstack architecture se lekar automated debugging tak sab execute karega.</p>
+      <!-- Scrollable Chat Stream -->
+      <div class="chat-scroll-container" id="scroll-container">
+        <div class="chat-max-width" id="messages-container">
+          <!-- Welcome Hero (Shown on empty conversation) -->
+          <div class="welcome-hero" id="welcome-hero">
+            <div class="hero-brand-mark">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <h2 class="hero-heading">DeepSeek Harness Agentic Studio</h2>
+            <p class="hero-description">
+              Autonomous multi-agent software engineering environment. Direct your queries to specialized models for system architecture, algorithmic logic, codebase scanning, and fullstack implementation.
+            </p>
 
-          <div class="prompt-chips-grid">
-            <button class="prompt-chip" data-prompt="Mujhe ek high-converting dark-mode SaaS dashboard banakar do HTML, CSS aur JavaScript me with glassmorphism and real-time charts.">
-              <span class="chip-emoji">🎨</span>
-              <div class="chip-text">
-                <strong>Modern Web App Build</strong>
-                <span>Dark-mode SaaS dashboard with animations</span>
-              </div>
-            </button>
+            <div class="developer-prompts-grid">
+              <button class="prompt-card" data-prompt="Design an ultra-low latency, event-driven microservices architecture using Redis Streams, Go, and PostgreSQL. Include database schema and concurrency patterns.">
+                <div class="card-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                    <line x1="6" y1="6" x2="6.01" y2="6"/>
+                    <line x1="6" y1="18" x2="6.01" y2="18"/>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Distributed Architecture</span>
+                  <span class="card-subtitle">Event-driven backend & database topology</span>
+                </div>
+              </button>
 
-            <button class="prompt-chip" data-prompt="DeepSeek V4 ki tarah ek scalable microservice architecture plan karo with authentication, rate limiting and PostgreSQL.">
-              <span class="chip-emoji">⚡</span>
-              <div class="chip-text">
-                <strong>System Architecture</strong>
-                <span>Scalable microservices & database plan</span>
-              </div>
-            </button>
+              <button class="prompt-card" data-prompt="Analyze this project structure and identify potential memory leaks, redundant async executions, and TypeScript type safety gaps. Provide exact code fixes.">
+                <div class="card-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">AST Code Audit</span>
+                  <span class="card-subtitle">Profile memory leaks, async lag & type safety</span>
+                </div>
+              </button>
 
-            <button class="prompt-chip" data-prompt="Mere project ke files ko analyze karo aur performance optimization ke 5 best solutions suggest karo.">
-              <span class="chip-emoji">🔍</span>
-              <div class="chip-text">
-                <strong>Codebase Inspection</strong>
-                <span>Find bottlenecks & optimize logic</span>
-              </div>
-            </button>
+              <button class="prompt-card" data-prompt="Decompose a complex SaaS multi-tenant authentication and billing platform into strict, phased engineering deliverables across our agent swarm.">
+                <div class="card-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Swarm Task Decomposition</span>
+                  <span class="card-subtitle">Multi-phase engineering execution plan</span>
+                </div>
+              </button>
 
-            <button class="prompt-chip" data-prompt="5 high-leverage micro-SaaS ya AdSense web tools ke ideas brainstorm karo jo me 24 ghante me bana saku.">
-              <span class="chip-emoji">💡</span>
-              <div class="chip-text">
-                <strong>Brainstorm High-ROI Ideas</strong>
-                <span>Quick-to-build profitable digital tools</span>
-              </div>
-            </button>
+              <button class="prompt-card" data-prompt="Write a complete high-performance Node.js / Express microservice boilerplate with structured logging, rate limiting, and comprehensive Vitest unit tests.">
+                <div class="card-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                    <polyline points="2 17 12 22 22 17"/>
+                    <polyline points="2 12 12 17 22 12"/>
+                  </svg>
+                </div>
+                <div class="card-content">
+                  <span class="card-title">Production Backend Suite</span>
+                  <span class="card-subtitle">REST API with Zod validation & unit test coverage</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Bottom Chat Input Bar -->
-      <footer class="input-tray">
-        <form id="chat-form" class="chat-form">
-          <div class="input-wrapper">
-            <textarea
-              id="user-input"
-              rows="1"
-              placeholder="Apna task ya sawal likhein (Hindi / Hinglish / English)… Press Enter to send"
-              autocomplete="off"
-              spellcheck="false"
-            ></textarea>
-            <button type="submit" id="btn-send" class="btn-send" aria-label="Send message">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </div>
-          <div class="input-hint">
-            <span>Tip: <strong>Shift + Enter</strong> for new line • Live connected to <strong>Harness Buddy Fleet</strong></span>
-          </div>
-        </form>
+      <!-- Bottom Chat Input Dock -->
+      <footer class="input-dock">
+        <div class="input-dock-inner">
+          <form id="chat-form" class="chat-box">
+            <div class="textarea-container">
+              <textarea
+                id="user-input"
+                rows="1"
+                placeholder="Ask anything or assign an engineering task... (Ctrl + Enter to send)"
+                autocomplete="off"
+                spellcheck="false"
+              ></textarea>
+              <button type="submit" id="btn-send" class="send-action-btn" aria-label="Send Message" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="19" x2="12" y2="5"/>
+                  <polyline points="5 12 12 5 19 12"/>
+                </svg>
+              </button>
+            </div>
+            <div class="dock-meta-row">
+              <div class="dock-meta-left">
+                <span class="context-tag" id="dock-context-tag">Context: 1M Tokens</span>
+                <span class="divider">•</span>
+                <span class="key-hint">Press <strong>Enter</strong> to send, <strong>Shift + Enter</strong> for new line</span>
+              </div>
+              <div class="dock-meta-right">
+                <span class="engine-badge">DeepSeek Harness Swarm</span>
+              </div>
+            </div>
+          </form>
+        </div>
       </footer>
     </main>
   </div>

@@ -27,6 +27,12 @@ const XKIRO_BASE_URL = (process.env.XKIRO_BASE_URL || "https://api.xkiro.com/v1"
 const DAHL_API_KEY = process.env.DAHL_API_KEY || "";
 const DAHL_BASE_URL = (process.env.DAHL_BASE_URL || "https://inference.dahl.global/v1").replace(/\/$/, '');
 
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "";
+const NVIDIA_BASE_URL = (process.env.NVIDIA_BASE_URL || "https://integrate.api.nvidia.com/v1").replace(/\/$/, '');
+
+const AGENTROUTER_API_KEY = process.env.AGENTROUTER_API_KEY || "";
+const AGENTROUTER_BASE_URL = (process.env.AGENTROUTER_BASE_URL || "https://agentrouter.org/v1").replace(/\/$/, '');
+
 const PORT = parseInt(process.env.PORT || "3080", 10);
 
 // Load agent personas from ../agents/
@@ -38,82 +44,187 @@ function loadPersona(fileName) {
   return "";
 }
 
+const PONYTAIL_SENIOR_STANDARDS = `
+[SENIOR PRINCIPAL SOFTWARE ARCHITECT & CODER DIRECTIVE]:
+You are operating under the strictest senior-engineer standards (Ponytail + Zero-Hallucination Framework).
+1. YAGNI (You Ain't Gonna Need It): Eliminate bloated boilerplate, unnecessary abstractions, and redundant helper classes. Produce clean, laser-focused, production-grade solutions.
+2. Complete Executable Code: NEVER use placeholders like '// TODO', '// add logic here', or '// write rest of function'. Always write 100% complete, working code.
+3. Defensive Engineering: Include explicit type safety (TypeScript / Python hints), error handling (try/catch, edge cases, input validation), and zero unhandled promises.
+4. Native Power: Prefer standard library and platform-native capabilities (Modern Fetch, Crypto, Web APIs) over bloating node_modules.
+5. Accuracy & Craftsmanship: Your code must survive production workloads under high concurrency. Explain key architectural decisions concisely.
+`;
+
+const FALLBACK_CHAINS = {
+  "claude-opus-5": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "gpt-6-astra": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "qwen/qwen3-coder-plus:free", name: "Qwen 3 Coder Plus" }
+  ],
+  "deepseek-v4-flash": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "deepseek/deepseek-v4-pro": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "qwen/qwen3-coder-plus:free", name: "Qwen 3 Coder Plus" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "deepseek/deepseek-v4.1-flash:free": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "qwen/qwen3.8-max:free": [
+    { provider: "xkiro", model: "qwen/qwen3.5-397b-a17b:free", name: "Qwen 3.5 397B MoE" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "moonshotai/kimi-k3": [
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "z-ai/glm-5.3": [
+    { provider: "xkiro", model: "qwen/qwen3-coder-plus:free", name: "Qwen 3 Coder Plus" },
+    { provider: "xkiro", model: "mistralai/codestral-2508", name: "Mistral Codestral" }
+  ],
+  "deepseek-ai/DeepSeek-V4-Flash-0731": [
+    { provider: "dahl", model: "MiniMaxAI/MiniMax-M2.7", name: "MiniMax M2.7" },
+    { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max Flagship" }
+  ]
+};
+
 const AGENTS = [
   {
+    id: "claude-opus-5",
+    name: "Claude Opus 5 (Elite)",
+    icon: "orchestrator",
+    badge: "Frontier Logic",
+    model: "claude-opus-5",
+    provider: "agentrouter",
+    role: "Master Architecture, Deep Refactoring & Clean Logic",
+    desc: "Anthropic's top frontier reasoning model on Agent Router. Unrivaled for multi-file refactoring and flawless code.",
+    systemPrompt: loadPersona("04-fullstack-engineer.md")
+  },
+  {
+    id: "gpt-6-astra",
+    name: "GPT-6 Astra (Elite)",
+    icon: "deepseek",
+    badge: "Next-Gen AI",
+    model: "gpt-6-astra",
+    provider: "agentrouter",
+    role: "Autonomous Engineering, Microservices & Deep Algorithms",
+    desc: "Next-generation reasoning flagship on Agent Router. Solves complex algorithmic challenges and distributed topologies.",
+    systemPrompt: loadPersona("01-chief-orchestrator.md")
+  },
+  {
+    id: "deepseek-v4-pro",
+    name: "DeepSeek V4 Pro",
+    icon: "deepseek",
+    badge: "1.6T MoE • xKiro",
+    model: "deepseek/deepseek-v4-pro",
+    provider: "xkiro",
+    role: "1.6T MoE Flagship Architecture & Engineering",
+    desc: "1.6 Trillion parameter flagship MoE with 49B activated params. Master of system architecture, distributed engineering, and deep refactoring.",
+    systemPrompt: loadPersona("01-chief-orchestrator.md")
+  },
+  {
     id: "chief-orchestrator",
-    name: "Chief Master Orchestrator",
-    emoji: "🕸️",
-    badge: "1.6T / 1M Brain",
+    name: "Qwen 3.8 Max Lead",
+    icon: "orchestrator",
+    badge: "1M Context",
     model: "qwen/qwen3.8-max:free",
     provider: "xkiro",
-    role: "Master Task Planner, Topology Architect & Swarm Coordinator",
-    desc: "Breaks complex problems into step-by-step engineering plans, assigns tasks to sub-agents, and verifies output quality.",
+    role: "Task Decomposition & Agent Swarm Router",
+    desc: "Alibaba's 1 Million context flagship model. Breaks complex requests into strict modular contracts and oversees swarm execution.",
+    systemPrompt: loadPersona("01-chief-orchestrator.md")
+  },
+  {
+    id: "qwen-coder-plus",
+    name: "Qwen Coder Specialist",
+    icon: "code",
+    badge: "Specialized Coder",
+    model: "qwen/qwen3-coder-plus:free",
+    provider: "xkiro",
+    role: "Deep Algorithmic Coding, Complex Refactor & Testing",
+    desc: "Specialized coding powerhouse trained specifically on millions of codebases, AST optimizations, and edge-case unit tests.",
+    systemPrompt: loadPersona("04-fullstack-engineer.md")
+  },
+  {
+    id: "deepseek-v4-1",
+    name: "DeepSeek V4.1 Flash",
+    icon: "deepseek",
+    badge: "552B MoE • xKiro",
+    model: "deepseek/deepseek-v4.1-flash:free",
+    provider: "xkiro",
+    role: "Next-Gen Causal MoE Architecture & Logic",
+    desc: "552B parameter MoE with 8B active params, native multimodal support, and 1M context window.",
     systemPrompt: loadPersona("01-chief-orchestrator.md")
   },
   {
     id: "deepseek-v4",
-    name: "Real DeepSeek V4 Brain",
-    emoji: "⚡",
-    badge: "Official DeepSeek",
+    name: "DeepSeek V4 (Dahl)",
+    icon: "deepseek",
+    badge: "100M Tokens",
     model: "deepseek-ai/DeepSeek-V4-Flash-0731",
     provider: "dahl",
-    role: "Deep Mathematical Reasoning, System Architecture & Code Indexing",
-    desc: "100 Million Free Tokens on Dahl Global. Ultra-fast inference for architecture design, algorithms, and logic evaluation.",
-    systemPrompt: "You are the official DeepSeek V4 Brain running on Harness Buddy. You deliver elite, concise, highly analytical system architecture designs and programming logic."
+    role: "System Architecture, Mathematical Logic & AST Analysis",
+    desc: "Official DeepSeek V4 architecture for system design, distributed data structures, and mathematical algorithms.",
+    systemPrompt: "You are the DeepSeek V4 Architecture Brain running on Harness Buddy. You deliver elite, concise, highly analytical system architecture designs and programming logic."
+  },
+  {
+    id: "kimi-k3",
+    name: "Moonshot Kimi K3",
+    icon: "kimi",
+    badge: "2.8T MoE • 1M",
+    model: "moonshotai/kimi-k3",
+    provider: "nvidia",
+    role: "Long-Horizon Agentic Coding & Repository Scanning",
+    desc: "2.8 Trillion parameter multimodal MoE with hybrid KDA+MLA attention for deep codebase analysis and agentic execution.",
+    systemPrompt: loadPersona("01-chief-orchestrator.md")
+  },
+  {
+    id: "glm-5-3",
+    name: "Z.ai GLM 5.3",
+    icon: "glm",
+    badge: "753B MoE",
+    model: "z-ai/glm-5.3",
+    provider: "nvidia",
+    role: "Complex Reasoning, Algorithms & Tool Calling",
+    desc: "753B parameter text MoE with DeepSeek-style sparse attention, native FP8 weights, and advanced reasoning.",
+    systemPrompt: "You are GLM 5.3, a premier reasoning and software engineering model. Deliver precise, production-grade solutions."
   },
   {
     id: "fullstack-engineer",
-    name: "Full-Stack Software Engineer",
-    emoji: "💻",
-    badge: "Core Logic & APIs",
+    name: "Codestral Fast Coder",
+    icon: "code",
+    badge: "Sub-Second Speed",
     model: "mistralai/codestral-2508",
     provider: "xkiro",
-    role: "Backend Architect, Compilers, Database & Algorithms",
-    desc: "Master of robust backend systems, REST/GraphQL APIs, distributed state, compilers, and complex refactoring.",
+    role: "Core Backend, REST/GraphQL APIs & Rapid Prototyping",
+    desc: "Sub-second 836ms coding engine for rapid backend development, REST endpoints, database schemas, and unit tests.",
     systemPrompt: loadPersona("04-fullstack-engineer.md")
   },
   {
-    id: "codebase-onboarder",
-    name: "Codebase Onboarder & Vision",
-    emoji: "👁️",
-    badge: "1M Multimodal Vision",
-    model: "minimax/minimax-m3:free",
-    provider: "xkiro",
-    role: "UI Image-to-Code, Wireframes & Giant Repository Scanning",
-    desc: "Can ingest 300+ file codebases in a single 1M context window and convert UI screenshots directly into clean code.",
-    systemPrompt: loadPersona("05-codebase-onboarder.md")
-  },
-  {
     id: "frontend-designer",
-    name: "Frontend UI/UX Designer",
-    emoji: "🎨",
-    badge: "Modern CSS & UX",
+    name: "UI/UX Designer",
+    icon: "layout",
+    badge: "CSS & UX",
     model: "qwen/qwen3.7-max:free",
     provider: "xkiro",
-    role: "World-Class Web Interfaces, Glassmorphism & Micro-Animations",
-    desc: "Produces breathtaking responsive layouts, Tailwind/CSS variables, dark modes, and dynamic user interfaces.",
+    role: "Modern Frontend, Design Systems & Interaction Polish",
+    desc: "Produces minimalist, accessible, responsive web interfaces, modern typography, and pixel-perfect layouts.",
     systemPrompt: loadPersona("03-frontend-ui-builder.md")
   },
   {
-    id: "code-specialist",
-    name: "Dedicated Code Specialist",
-    emoji: "🔧",
-    badge: "Bug Fix & Tests",
-    model: "qwen/qwen3-coder-plus:free",
-    provider: "xkiro",
-    role: "Pinpoint Bug Fixing, Unit Test Suites (Vitest/Jest) & Performance",
-    desc: "Targeted code repair, algorithm optimization, and automated test coverage generator.",
-    systemPrompt: "You are the Dedicated Code Specialist. You specialize in pinpoint bug fixing, edge-case analysis, and writing comprehensive unit tests (Vitest/Jest/PyTest)."
-  },
-  {
     id: "devops-automator",
-    name: "DevOps & OS Automator",
-    emoji: "⚙️",
-    badge: "Terminal & Git",
+    name: "DevOps & CLI Automator",
+    icon: "terminal",
+    badge: "493ms Speed",
     model: "mistralai/devstral-medium",
     provider: "xkiro",
-    role: "PowerShell Automation, Git Workflow & CI/CD Pipelines",
-    desc: "Handles system commands, automation scripts, branch management, and workspace pipeline automation.",
+    role: "Terminal Automation, CI/CD & Git Workflows",
+    desc: "Automates command-line workflows, file system management, build pipelines, and Git version control.",
     systemPrompt: loadPersona("02-devops-os-automator.md")
   }
 ];
@@ -162,7 +273,9 @@ const server = http.createServer(async (req, res) => {
       agents: AGENTS.map(({ systemPrompt, ...rest }) => rest),
       keysConfigured: {
         xkiro: !!XKIRO_API_KEY,
-        dahl: !!DAHL_API_KEY
+        dahl: !!DAHL_API_KEY,
+        nvidia: !!NVIDIA_API_KEY,
+        agentrouter: !!AGENTROUTER_API_KEY
       }
     });
   }
@@ -175,7 +288,9 @@ const server = http.createServer(async (req, res) => {
       agentsCount: AGENTS.length,
       keysStatus: {
         xkiro: !!XKIRO_API_KEY,
-        dahl: !!DAHL_API_KEY
+        dahl: !!DAHL_API_KEY,
+        nvidia: !!NVIDIA_API_KEY,
+        agentrouter: !!AGENTROUTER_API_KEY
       },
       time: new Date().toISOString()
     });
@@ -213,6 +328,12 @@ const server = http.createServer(async (req, res) => {
         if (agent.provider === 'dahl') {
           endpoint = `${DAHL_BASE_URL}/chat/completions`;
           apiKey = DAHL_API_KEY;
+        } else if (agent.provider === 'nvidia') {
+          endpoint = `${NVIDIA_BASE_URL}/chat/completions`;
+          apiKey = NVIDIA_API_KEY;
+        } else if (agent.provider === 'agentrouter') {
+          endpoint = `${AGENTROUTER_BASE_URL}/chat/completions`;
+          apiKey = AGENTROUTER_API_KEY;
         }
 
         if (!apiKey) {
@@ -221,46 +342,100 @@ const server = http.createServer(async (req, res) => {
           });
         }
 
-        // Build messages payload with persona
+        // Build messages payload with persona & Ponytail standards
         const formattedMessages = [];
-        if (agent.systemPrompt) {
-          formattedMessages.push({
-            role: "system",
-            content: `${agent.systemPrompt}\n\nYou are ${agent.name} (${agent.role}). Respond with helpful, deeply capable, concise and structured answers in Hindi, Hinglish, or English as preferred by the user.`
-          });
-        }
+        const personaText = agent.systemPrompt || `You are ${agent.name} (${agent.role}).`;
+        formattedMessages.push({
+          role: "system",
+          content: `${personaText}\n\n${PONYTAIL_SENIOR_STANDARDS}\n\nYou are ${agent.name} (${agent.role}). Deliver elite, deeply capable, mathematically sound and clean solutions in Hindi, Hinglish, or English as requested.`
+        });
+        
         if (Array.isArray(messages)) {
           formattedMessages.push(...messages);
         }
 
-        const aiResponse = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: agent.model,
-            messages: formattedMessages,
-            temperature: 0.3,
-            max_tokens: 3000
-          })
-        });
+        // Helper to query model endpoint
+        async function queryEndpoint(prov, mdl) {
+          let ep = `${XKIRO_BASE_URL}/chat/completions`;
+          let k = XKIRO_API_KEY;
+          const customHeaders = {
+            "Content-Type": "application/json"
+          };
 
-        const data = await aiResponse.json();
-        if (!aiResponse.ok) {
-          return sendJSON(res, aiResponse.status, {
-            error: data.error?.message || `Gateway returned status ${aiResponse.status}`
+          if (prov === 'dahl') {
+            ep = `${DAHL_BASE_URL}/chat/completions`;
+            k = DAHL_API_KEY;
+          } else if (prov === 'nvidia') {
+            ep = `${NVIDIA_BASE_URL}/chat/completions`;
+            k = NVIDIA_API_KEY;
+          } else if (prov === 'agentrouter') {
+            ep = `${AGENTROUTER_BASE_URL}/chat/completions`;
+            k = AGENTROUTER_API_KEY;
+            customHeaders["User-Agent"] = "RooCode/0.15.0";
+          }
+
+          if (!k) return { ok: false, status: 400, error: `Key missing for provider: ${prov}` };
+          customHeaders["Authorization"] = `Bearer ${k}`;
+
+          try {
+            const resp = await fetch(ep, {
+              method: "POST",
+              headers: customHeaders,
+              body: JSON.stringify({
+                model: mdl,
+                messages: formattedMessages,
+                temperature: 0.25,
+                max_tokens: 3200
+              })
+            });
+            const d = await resp.json().catch(() => ({}));
+            if (resp.ok && d.choices?.[0]?.message?.content) {
+              return { ok: true, content: d.choices[0].message.content, model: mdl };
+            }
+            return { ok: false, status: resp.status, error: d.error?.message || `Status ${resp.status}` };
+          } catch(err) {
+            return { ok: false, status: 500, error: err.message };
+          }
+        }
+
+        // 1. Try Primary Model
+        let result = await queryEndpoint(agent.provider, agent.model);
+        let executedModel = agent.model;
+        let failoverNotice = null;
+
+        // 2. Intelligent Auto-Fallback Loop
+        if (!result.ok) {
+          const fallbacks = FALLBACK_CHAINS[agent.model] || [
+            { provider: "xkiro", model: "qwen/qwen3.8-max:free", name: "Qwen 3.8 Max" },
+            { provider: "xkiro", model: "qwen/qwen3-coder-plus:free", name: "Qwen 3 Coder Plus" }
+          ];
+
+          for (const fb of fallbacks) {
+            console.log(`[FAILOVER] Primary model '${agent.model}' failed (${result.error}). Trying fallback '${fb.model}'...`);
+            const fbResult = await queryEndpoint(fb.provider, fb.model);
+            if (fbResult.ok) {
+              result = fbResult;
+              executedModel = fb.model;
+              failoverNotice = `Auto-routed to ${fb.name} (${fb.model}) for zero-downtime execution.`;
+              break;
+            }
+          }
+        }
+
+        if (!result.ok) {
+          return sendJSON(res, result.status || 500, {
+            error: `All execution chains failed: ${result.error}`
           });
         }
 
-        const reply = data.choices?.[0]?.message?.content || "No response generated.";
         return sendJSON(res, 200, {
           success: true,
           agentId: agent.id,
           agentName: agent.name,
-          model: agent.model,
-          reply
+          model: executedModel,
+          requestedModel: agent.model,
+          failoverNotice,
+          reply: result.content
         });
       } catch (err) {
         return sendJSON(res, 500, { error: err.message });

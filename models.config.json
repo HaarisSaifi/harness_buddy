@@ -73,6 +73,72 @@
         }
       }
     },
+    "nvidia": {
+      "name": "NVIDIA NIM / Build (Free Endpoints)",
+      "baseURL": "https://integrate.api.nvidia.com/v1",
+      "apiKey": "${NVIDIA_API_KEY}",
+      "models": {
+        "glm_5_3": {
+          "id": "z-ai/glm-5.3",
+          "name": "Z.ai GLM 5.3 (753B Heavy Logic)",
+          "context_window": "1M tokens",
+          "role": "Deep Algorithmic Coding, Complex Bug Fixing & Architecture",
+          "agent_persona": "agents/04-fullstack-engineer.md"
+        },
+        "glm_5_3_flash": {
+          "id": "z-ai/glm-5.3-flash",
+          "name": "Z.ai GLM 5.3 Flash (320B Multimodal)",
+          "context_window": "1M tokens",
+          "role": "Fast Reasoning, Agentic Tools & Multimodal Analysis",
+          "agent_persona": "agents/05-codebase-onboarder.md"
+        },
+        "kimi_k3": {
+          "id": "moonshotai/kimi-k3",
+          "name": "Moonshot Kimi K3 (2.8T MoE Agentic Brain)",
+          "context_window": "1M tokens",
+          "role": "Long-Horizon Multi-Agent Coding & Repo Scanning",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        },
+        "deepseek_v4_1": {
+          "id": "deepseek-ai/deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash",
+          "context_window": "1M tokens",
+          "role": "High-Speed MoE Architecture, System Analysis & Code Indexing",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        }
+      }
+    },
+    "agentrouter": {
+      "name": "Agent Router (Elite Tier)",
+      "baseURL": "https://agentrouter.org/v1",
+      "apiKey": "${AGENTROUTER_API_KEY}",
+      "headers": {
+        "User-Agent": "RooCode/0.15.0"
+      },
+      "models": {
+        "claude_opus_5": {
+          "id": "claude-opus-5",
+          "name": "Claude Opus 5 (Frontier Logic)",
+          "context_window": "1M tokens",
+          "role": "Master Code Review, Multi-File Architecture & Human-Level Refactoring",
+          "agent_persona": "agents/04-fullstack-engineer.md"
+        },
+        "gpt_6_astra": {
+          "id": "gpt-6-astra",
+          "name": "GPT-6 Astra (Next-Gen Reasoning)",
+          "context_window": "1M tokens",
+          "role": "Advanced Distributed Systems, Complex Algorithms & Logic",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        },
+        "deepseek_v4_flash": {
+          "id": "deepseek-v4-flash",
+          "name": "DeepSeek V4 Flash (Agent Router)",
+          "context_window": "1M tokens",
+          "role": "High-Speed MoE System Architecture & Code Indexing",
+          "agent_persona": "agents/01-chief-orchestrator.md"
+        }
+      }
+    },
     "opencode_oxalpha": {
       "name": "OpenCode AI (Ox Alpha)",
       "runtime": "opencode-ai",

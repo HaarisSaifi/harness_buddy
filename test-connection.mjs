@@ -33,11 +33,15 @@ const dahlKey = process.env.DAHL_API_KEY || "";
 const rawDahlBase = process.env.DAHL_BASE_URL || "https://inference.dahl.global/v1";
 const dahlBase = rawDahlBase.endsWith('/chat/completions') ? rawDahlBase : `${rawDahlBase.replace(/\/$/, '')}/chat/completions`;
 
+const nvidiaKey = process.env.NVIDIA_API_KEY || "";
+const rawNvidiaBase = process.env.NVIDIA_BASE_URL || "https://integrate.api.nvidia.com/v1";
+const nvidiaBase = rawNvidiaBase.endsWith('/chat/completions') ? rawNvidiaBase : `${rawNvidiaBase.replace(/\/$/, '')}/chat/completions`;
+
 console.log("===============================================================================");
 console.log("             🚀 HARNESS BUDDY: MULTI-AGENT FLEET HEALTH CHECK                  ");
 console.log("===============================================================================\n");
 
-if (!xkiroKey && !dahlKey) {
+if (!xkiroKey && !dahlKey && !nvidiaKey) {
   console.log("⚠️  NO API KEYS DETECTED IN ENVIRONMENT OR .env FILE!\n");
   console.log("👉 How to configure your keys:");
   console.log("   1. Copy '.env.example' to '.env'");
@@ -112,6 +116,27 @@ if (dahlKey) {
     model: "deepseek-ai/DeepSeek-V4-Flash-0731",
     desc: "DeepSeek Official V4 Architecture (High-Speed Inference)"
   });
+}
+
+if (nvidiaKey) {
+  agentFleet.push(
+    {
+      role: "08. Z.ai GLM 5.3 (753B Heavy Logic Brain)",
+      provider: "NVIDIA NIM",
+      endpoint: nvidiaBase,
+      key: nvidiaKey,
+      model: "z-ai/glm-5.3",
+      desc: "753B Sparse Attention MoE with Reasoning & Tool Calling"
+    },
+    {
+      role: "09. Moonshot Kimi K3 (2.8T Agentic Brain)",
+      provider: "NVIDIA NIM",
+      endpoint: nvidiaBase,
+      key: nvidiaKey,
+      model: "moonshotai/kimi-k3",
+      desc: "2.8T Hybrid KDA+MLA Multimodal MoE for Long-Horizon Agent Coding"
+    }
+  );
 }
 
 async function testAgent(agent) {
