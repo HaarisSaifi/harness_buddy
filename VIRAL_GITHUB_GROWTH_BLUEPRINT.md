@@ -86,9 +86,9 @@ Har accepted PR aapki repo ko daily 5-10 organic stars provide karegi.
 
 1. **In README / Docs:**  
    Highlight the **Agent Router** free tier invite banner:
-   *"Get free credits & high-tier models via referral link: [agentrouter.org](https://agentrouter.org)"*
+   *"Get free credits & high-tier models via referral link: [agentrouter.org/register?aff=D9Vf](https://agentrouter.org/register?aff=D9Vf)"*
 2. **In Discord / Telegram Groups:**  
-   Share helpful tips on how developers can use the free tier endpoints (Dahl 100M tokens, xKiro free 1M Qwen) and how Agent Router unlocks Claude Opus 5.
+   Share helpful tips on how developers can use the free tier endpoints (Dahl 100M tokens, xKiro free 1M Qwen) and how Agent Router unlocks Claude Opus 5 with bonus credits using your link: `https://agentrouter.org/register?aff=D9Vf`.
 3. Jab developers aapke link se sign up karenge, unhe credits milenge aur aapko referral commission/credits milenge jisse aapka account funded rahega!
 
 ---

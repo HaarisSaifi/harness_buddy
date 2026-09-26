@@ -51,7 +51,7 @@ You do **NOT** need to pay thousands of dollars for frontier AI models. Follow t
 
 ### 1. 🌐 Agent Router (Frontier Tier: Claude Opus 5 & GPT-6 Astra)
 Access top-tier frontier models through Agent Router's aggregated infrastructure:
-- **Sign Up Link**: [Agent Router Platform](https://agentrouter.org) *(Use referral invitation for free credits and high-tier model access)*
+- **Invitation Link (Free Tier Bonus)**: **[Agent Router Free Signup (Bonus Credits)](https://agentrouter.org/register?aff=D9Vf)** *(Use this invitation link to claim bonus credits & unlock Claude Opus 5, GPT-6 Astra, and DeepSeek V4 without waitlists)*
 - **Models Available**: `claude-opus-5`, `gpt-6-astra`, `deepseek-v4-flash`, `claude-3-7-sonnet`.
 - **Setup**: In your Agent Router Console -> **Tokens**, create an API key, set Quota to **Unlimited**, and select **All Models**.
 - Put in `.env`:
