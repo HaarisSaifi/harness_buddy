@@ -34,6 +34,7 @@ const AGENTROUTER_API_KEY = process.env.AGENTROUTER_API_KEY || "";
 const AGENTROUTER_BASE_URL = (process.env.AGENTROUTER_BASE_URL || "https://agentrouter.org/v1").replace(/\/$/, '');
 
 const PORT = parseInt(process.env.PORT || "3080", 10);
+let activeWorkspace = fs.existsSync('d:\\mamu court') ? 'd:\\mamu court' : path.join(__dirname, '..');
 
 // Load agent personas from ../agents/
 function loadPersona(fileName) {
@@ -296,18 +297,56 @@ const server = http.createServer(async (req, res) => {
     });
   }
 
-  // 3. API: Workspace File Explorer
+  // 3. API: Workspace File Explorer & Folder Connection
   if (pathname === '/api/workspace' && req.method === 'GET') {
-    const rootDir = path.join(__dirname, '..');
+    const customDir = parsedUrl.searchParams.get('dir');
+    if (customDir && fs.existsSync(customDir)) {
+      activeWorkspace = path.resolve(customDir);
+    }
     try {
-      const items = fs.readdirSync(rootDir, { withFileTypes: true });
+      const items = fs.readdirSync(activeWorkspace, { withFileTypes: true });
       const files = items
-        .filter(i => !i.name.startsWith('.') && i.name !== 'node_modules')
+        .filter(i => !i.name.startsWith('.') && i.name !== 'node_modules' && i.name !== '__pycache__')
         .map(i => ({
           name: i.name,
           isDir: i.isDirectory()
         }));
-      return sendJSON(res, 200, { success: true, root: rootDir, files });
+      return sendJSON(res, 200, { success: true, root: activeWorkspace, files });
+    } catch(e) {
+      return sendJSON(res, 500, { error: e.message });
+    }
+  }
+
+  // 3b. API: Switch Connected Project Workspace
+  if (pathname === '/api/workspace/set' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const { dir } = JSON.parse(body || '{}');
+        if (dir && fs.existsSync(dir)) {
+          activeWorkspace = path.resolve(dir);
+          return sendJSON(res, 200, { success: true, root: activeWorkspace });
+        }
+        return sendJSON(res, 400, { error: `Directory "${dir}" does not exist on disk.` });
+      } catch(e) {
+        return sendJSON(res, 500, { error: e.message });
+      }
+    });
+    return;
+  }
+
+  // 3c. API: Read File Content from Connected Workspace
+  if (pathname === '/api/workspace/file' && req.method === 'GET') {
+    const relFile = parsedUrl.searchParams.get('file');
+    if (!relFile) return sendJSON(res, 400, { error: "Filename required" });
+    const fullPath = path.join(activeWorkspace, relFile);
+    try {
+      if (!fs.existsSync(fullPath)) return sendJSON(res, 404, { error: "File not found" });
+      const stat = fs.statSync(fullPath);
+      if (stat.size > 150000) return sendJSON(res, 400, { error: "File too large to preview (>150KB)" });
+      const content = fs.readFileSync(fullPath, 'utf8');
+      return sendJSON(res, 200, { success: true, file: relFile, content });
     } catch(e) {
       return sendJSON(res, 500, { error: e.message });
     }
@@ -342,12 +381,27 @@ const server = http.createServer(async (req, res) => {
           });
         }
 
-        // Build messages payload with persona & Ponytail standards
+        // Build workspace context injection
+        let workspaceContext = "";
+        try {
+          if (fs.existsSync(activeWorkspace)) {
+            const wItems = fs.readdirSync(activeWorkspace, { withFileTypes: true });
+            const wFiles = wItems
+              .filter(i => !i.name.startsWith('.') && i.name !== 'node_modules' && i.name !== '__pycache__')
+              .map(i => i.isDirectory() ? `${i.name}/` : i.name);
+            workspaceContext = `\n\n[CONNECTED PROJECT WORKSPACE]:
+Directory: ${activeWorkspace}
+Files & Folders: ${wFiles.slice(0, 40).join(', ')}
+You are directly connected to this project directory. Tailor all architectural decisions, dependencies, and code modifications precisely to this codebase.`;
+          }
+        } catch(e) {}
+
+        // Build messages payload with persona & Ponytail standards & workspace context
         const formattedMessages = [];
         const personaText = agent.systemPrompt || `You are ${agent.name} (${agent.role}).`;
         formattedMessages.push({
           role: "system",
-          content: `${personaText}\n\n${PONYTAIL_SENIOR_STANDARDS}\n\nYou are ${agent.name} (${agent.role}). Deliver elite, deeply capable, mathematically sound and clean solutions in Hindi, Hinglish, or English as requested.`
+          content: `${personaText}\n\n${PONYTAIL_SENIOR_STANDARDS}${workspaceContext}\n\nYou are ${agent.name} (${agent.role}). Deliver elite, deeply capable, mathematically sound and clean solutions in Hindi, Hinglish, or English as requested.`
         });
         
         if (Array.isArray(messages)) {

@@ -49,8 +49,12 @@ const dom = {
   chatForm: document.getElementById('chat-form'),
   userInput: document.getElementById('user-input'),
   btnSend: document.getElementById('btn-send'),
-  btnClearChat: document.getElementById('btn-clear-chat')
+  btnClearChat: document.getElementById('btn-clear-chat'),
+  activeWorkspaceName: document.getElementById('active-workspace-name'),
+  workspaceIndicator: document.getElementById('workspace-indicator')
 };
+
+let currentWorkspaceRoot = "";
 
 // 1. Initialize Studio
 async function initStudio() {
@@ -66,6 +70,51 @@ async function initStudio() {
   } catch (err) {
     console.error("Failed to load agent fleet:", err);
     dom.fleetStatusText.textContent = "Offline";
+  }
+
+  // Load Connected Workspace Folder
+  try {
+    const wsRes = await fetch('/api/workspace');
+    const wsData = await wsRes.json();
+    if (wsData.success && wsData.root) {
+      currentWorkspaceRoot = wsData.root;
+      const parts = wsData.root.replace(/\\/g, '/').split('/').filter(Boolean);
+      const base = parts[parts.length - 1] || wsData.root;
+      if (dom.activeWorkspaceName) {
+        dom.activeWorkspaceName.textContent = base;
+        dom.workspaceIndicator.title = `Connected Folder: ${wsData.root} (${wsData.files?.length || 0} files). Click to switch project!`;
+      }
+    }
+  } catch(e) {
+    console.warn("Failed to load workspace:", e);
+  }
+
+  // Workspace Switcher on Click
+  if (dom.workspaceIndicator) {
+    dom.workspaceIndicator.addEventListener('click', async () => {
+      const nextDir = prompt("Enter Absolute Path of Project Folder to Connect:", currentWorkspaceRoot);
+      if (nextDir && nextDir.trim() && nextDir.trim() !== currentWorkspaceRoot) {
+        try {
+          const setRes = await fetch('/api/workspace/set', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dir: nextDir.trim() })
+          });
+          const setData = await setRes.json();
+          if (setData.success) {
+            currentWorkspaceRoot = setData.root;
+            const parts = setData.root.replace(/\\/g, '/').split('/').filter(Boolean);
+            dom.activeWorkspaceName.textContent = parts[parts.length - 1] || setData.root;
+            dom.workspaceIndicator.title = `Connected Folder: ${setData.root}`;
+            alert(`✅ Successfully connected to: ${setData.root}\nAgents will now reference this project codebase!`);
+          } else {
+            alert(`❌ Error: ${setData.error}`);
+          }
+        } catch(err) {
+          alert(`❌ Failed to switch directory: ${err.message}`);
+        }
+      }
+    });
   }
 
   setupEventListeners();
