@@ -7,6 +7,8 @@
 .env.*
 !.env.example
 *.local
+start-claude*.bat
+!start-claude*.example.bat
 
 # Personal Memory & Notes
 brainmem.md
